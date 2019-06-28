@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Stopwatch</title>
+	<meta charset="UTF-8">
+	<meta name="theme-color" content="#44883e">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="stopstyle.css">
+	<script src="stopscript.js" defer></script>
+</head>
+<body>
+	<div id="header">
+		<div id="inputbox">
+			<input id="idSelector" type="text" onkeypress="(function(event){if (event.keyCode == 13){changeID();}})(event)">
+			<button onclick="changeID()">Submit</button>
+		</div>
+	</div>
+	<div id="timecontainer">
+		<div id="timedisplay">
+			<span id="title"></span><br>
+			<span id="elapsedtime"><span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>,<span id="fracs">00</span></span><br>
+			<button>Start</button><button>Stop</button><button>Reset</button>
+		</div>
+	</div>
+	<input id="log" disabled>
+</body>
+</html>

@@ -1,0 +1,65 @@
+html,body{
+	font-family: "Segoe UI", Verdana, sans-serif;
+	padding: 0;
+	margin: 0;
+}
+
+#header{
+	background-color: #44883e;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#header > #inputbox{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 90%;
+	height: 100%;
+}
+
+#header > #inputbox > *{
+	display:block;
+}
+
+#header > #inputbox > input{
+	float:left;
+	height: 29px;
+	flex-grow: 1;
+}
+
+#header > #inputbox > button{
+	height: 35px;
+	flex-grow: 0;
+}
+
+@media screen and (min-width: 556px){
+	#header > #inputbox{
+		width: 500px;
+	}
+	#timecontainer > #timedisplay{
+		width: 470px;
+	}
+}
+
+#timecontainer{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#timedisplay{
+	margin-top: 20px;
+	margin-bottom: 20px;
+	padding: 10px;
+	border: 5px solid #44883e;
+	width:calc(90% - 30px);
+	margin-left: 0;
+	margin-right: 0;
+}
+
+#elapsedtime{
+	font-size: 3em;
+}
