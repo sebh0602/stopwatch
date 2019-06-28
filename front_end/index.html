@@ -20,9 +20,11 @@
 		<div id="timedisplay">
 			<span id="title"></span><br>
 			<span id="elapsedtime"><span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>,<span id="fracs">00</span></span><br>
-			<button>Start</button><button>Stop</button><button>Reset</button>
+			<button onclick="controlHandler('start')">Start</button>
+			<button onclick="controlHandler('stop')">Stop</button>
+			<button onclick="controlHandler('reset')">Reset</button>
 		</div>
 	</div>
-	<input id="log" disabled>
+	<textarea id="log" disabled></textarea>
 </body>
 </html>

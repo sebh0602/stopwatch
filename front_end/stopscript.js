@@ -18,4 +18,20 @@ function changeID(){
 	}
 }
 
+function controlHandler(type){
+	switch(type){
+		case "reset":
+			if (confirm("Are you sure you want to reset?")){
+				localStorage.removeItem("log");
+			}
+			break;
+		default:
+			if (localStorage.log == undefined){
+				localStorage.log = "";
+			}
+			localStorage.log += new Date().toISOString() + "\n";
+			document.getElementById("log").value = localStorage.log;
+	}
+}
+
 run();
