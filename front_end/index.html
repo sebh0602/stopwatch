@@ -27,14 +27,17 @@
 				</span>
 			</div>
 			<div id="linethree">
-				<button onclick="controlHandler('start')">Start</button>
-				<button onclick="controlHandler('stop')">Stop</button>
+				<button onclick="controlHandler('start')" id="startbutton">Start</button>
+				<button onclick="controlHandler('stop')" id="stopbutton">Stop</button>
 				<button onclick="controlHandler('reset')">Reset</button>
 			</div>
 		</div>
 	</div>
 	<div id="logcontainer">
-		<textarea id="log" rows="5" disabled></textarea>
+		<div id="vertlogcontainer">
+			<textarea id="log" rows="8" disabled></textarea>
+			<button onclick="edit()" id="editButton">Edit</button>
+		</div>
 	</div>
 </body>
 </html>

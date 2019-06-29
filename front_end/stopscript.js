@@ -7,10 +7,20 @@ function run(){
 		localStorage.id = randomID;
 	}
 	document.getElementById("title").innerHTML = localStorage.id;
-	if (localStorage.log != undefined){
-		document.getElementById("log").value = localStorage.log;
-	}
 
+	var log = localStorage.log
+	if (log != undefined){
+		document.getElementById("log").value = log;
+		var splitLog = log.split("\n");
+		splitLog = splitLog.slice(0,splitLog.length - 1);
+		if (splitLog[splitLog.length - 1].includes("start")){
+			document.getElementById("startbutton").disabled = true;
+		} else{
+			document.getElementById("stopbutton").disabled = true;
+		}
+	} else{
+		document.getElementById("stopbutton").disabled = true;
+	}
 }
 
 function changeID(){
@@ -19,27 +29,6 @@ function changeID(){
 		localStorage.id = document.getElementById("idSelector").value;
 		document.getElementById("title").innerHTML = localStorage.id;
 		document.getElementById("idSelector").value = "";
-	}
-}
-
-function controlHandler(type){
-	switch(type){
-		case "reset":
-			if (confirm("Are you sure you want to reset?")){
-				localStorage.removeItem("log");
-				document.getElementById("log").value = "";
-			}
-			document.getElementById("hours").innerHTML = "00";
-			document.getElementById("minutes").innerHTML = "00";
-			document.getElementById("seconds").innerHTML = "00";
-			document.getElementById("fracs").innerHTML = "0";
-			break;
-		default:
-			if (localStorage.log == undefined){
-				localStorage.log = "";
-			}
-			localStorage.log += ((type == "stop") ? "stop " : type) + "|" + new Date().toISOString() + "\n";
-			document.getElementById("log").value = localStorage.log;
 	}
 }
 
@@ -70,11 +59,19 @@ function updateTime(){
 		totalDelta += new Date() - start;
 	}
 
+	var negative = (totalDelta < 0) ? true:false;
+	if (negative){
+		totalDelta *= -1;
+	}
+
 	var hours = Math.floor(totalDelta / 3600000);
 	totalDelta -= hours * 3600000;
 	hours = hours.toString();
 	if (hours.length < 2){
 		hours = "0" + hours;
+	}
+	if (negative){
+		hours = "-" + hours;
 	}
 
 	var minutes = Math.floor(totalDelta / 60000);
@@ -98,6 +95,51 @@ function updateTime(){
 	document.getElementById("minutes").innerHTML = minutes;
 	document.getElementById("seconds").innerHTML = seconds;
 	document.getElementById("fracs").innerHTML = fracs;
+}
+
+function controlHandler(type){
+	if (localStorage.log == undefined){
+		localStorage.log = "";
+	}
+	switch(type){
+		case "reset":
+			if (confirm("Are you sure you want to reset?")){
+				localStorage.removeItem("log");
+				document.getElementById("log").value = "";
+			}
+			document.getElementById("hours").innerHTML = "00";
+			document.getElementById("minutes").innerHTML = "00";
+			document.getElementById("seconds").innerHTML = "00";
+			document.getElementById("fracs").innerHTML = "0";
+			document.getElementById("stopbutton").disabled = true;
+			document.getElementById("startbutton").disabled = false;
+			break;
+		case "start":
+			localStorage.log += "start|" + new Date().toISOString() + "\n";
+			document.getElementById("log").value = localStorage.log;
+			document.getElementById("startbutton").disabled = true;
+			document.getElementById("stopbutton").disabled = false;
+			break;
+		case "stop":
+			localStorage.log += "stop |" + new Date().toISOString() + "\n\n";
+			document.getElementById("log").value = localStorage.log;
+			document.getElementById("startbutton").disabled = false;
+			document.getElementById("stopbutton").disabled = true;
+			break;
+		default:
+			console.log("something went wrong");
+	}
+}
+
+function edit(){
+	var editMode = document.getElementById("log").disabled;
+	document.getElementById("log").disabled = !editMode;
+	if (editMode){
+		document.getElementById("editButton").innerHTML = "Submit";
+	} else{
+		document.getElementById("editButton").innerHTML = "Edit";
+		localStorage.log = document.getElementById("log").value;
+	}
 }
 
 run();
