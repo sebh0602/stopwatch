@@ -1,14 +1,18 @@
 const WebSocket = require("ws");
+var fs = require("fs");
 const wss = new WebSocket.Server({ port:8080, maxPayload:5000000}); //mayPayload in bytes
 var idIndex = {};
 var data = {};
 
 //PERIODICALLY CLEANSE ALL CONNECTIONS OF DEAD ONES
 //save
-//	broadcast
 //read
 
 function run(){
+	if (fs.existsSync("data.json")){
+		data = JSON.parse(fs.readFileSync("data.json").toString());
+	}
+
 	wss.on("connection", function connection(ws){
 		ws.on("message", function incoming(message) {
 			try{
@@ -48,6 +52,7 @@ function run(){
 				if (data[id] == ""){
 					delete data[id];
 				}
+				fs.writeFileSync("data.json", JSON.stringify(data));
 			} else{
 				var payload = {
 					log:(data[id] != undefined) ? data[id]:""
