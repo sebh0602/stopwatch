@@ -12,19 +12,29 @@
 <body>
 	<div id="header">
 		<div id="inputbox">
-			<input id="idSelector" type="text" onkeypress="(function(event){if (event.keyCode == 13){changeID();}})(event)">
+			<input id="idSelector" type="text" onkeypress="if (event.keyCode == 13){changeID();}">
 			<button onclick="changeID()">Submit</button>
 		</div>
 	</div>
 	<div id="timecontainer">
 		<div id="timedisplay">
-			<span id="title"></span><br>
-			<span id="elapsedtime"><span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>,<span id="fracs">00</span></span><br>
-			<button onclick="controlHandler('start')">Start</button>
-			<button onclick="controlHandler('stop')">Stop</button>
-			<button onclick="controlHandler('reset')">Reset</button>
+			<div id="lineone">
+				<span id="title"></span>
+			</div>
+			<div id="linetwo">
+				<span id="elapsedtime">
+					<span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>,<span id="fracs">00</span>
+				</span>
+			</div>
+			<div id="linethree">
+				<button onclick="controlHandler('start')">Start</button>
+				<button onclick="controlHandler('stop')">Stop</button>
+				<button onclick="controlHandler('reset')">Reset</button>
+			</div>
 		</div>
 	</div>
-	<textarea id="log" disabled></textarea>
+	<div id="logcontainer">
+		<textarea id="log" rows="5" disabled></textarea>
+	</div>
 </body>
 </html>
