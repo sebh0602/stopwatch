@@ -22,7 +22,7 @@ function run(){
 		document.getElementById("stopbutton").disabled = true;
 	}
 
-	hostname = (window.location.protocol == "https:") ? "wss://" : "ws://" + window.location.hostname + "/ws/";
+	hostname = ((window.location.protocol == "https:") ? "wss://" : "ws://") + window.location.hostname + "/ws/";
 	wSocket = new WebSocket(hostname);
 	wSocket.onmessage = update;
 
