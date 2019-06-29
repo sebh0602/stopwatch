@@ -67,9 +67,10 @@ function push(){
 function update(msg){
 	var newLog = JSON.parse(msg.data).log;
 	if (newLog == ""){
-		controlHandler("reset");
+		reset();
 	} else{
 		localStorage.log = JSON.parse(msg.data).log;
+		document.getElementById("log").value = localStorage.log;
 	}
 }
 
@@ -117,6 +118,11 @@ function updateTime(){
 	}
 	if (nextCommand == "stop"){
 		totalDelta += new Date() - start;
+		document.getElementById("stopbutton").disabled = false;
+		document.getElementById("startbutton").disabled = true;
+	} else{
+		document.getElementById("stopbutton").disabled = true;
+		document.getElementById("startbutton").disabled = false;
 	}
 
 	var negative = (totalDelta < 0) ? true:false;
@@ -163,35 +169,35 @@ function controlHandler(type){
 	}
 	switch(type){
 		case "reset":
-			localStorage.removeItem("log");
-			document.getElementById("log").value = "";
-			document.getElementById("hours").innerHTML = "00";
-			document.getElementById("minutes").innerHTML = "00";
-			document.getElementById("seconds").innerHTML = "00";
-			document.getElementById("fracs").innerHTML = "0";
-			document.getElementById("stopbutton").disabled = true;
-			document.getElementById("startbutton").disabled = false;
-			if (!document.getElementById("log").disabled){
-				document.getElementById("editButton").innerHTML = "Edit";
-				document.getElementById("log").disabled = true;
-			}
+			reset();
 			break;
 		case "start":
 			localStorage.log += "start|" + new Date().toISOString() + "\n";
 			document.getElementById("log").value = localStorage.log;
-			document.getElementById("startbutton").disabled = true;
-			document.getElementById("stopbutton").disabled = false;
 			break;
 		case "stop":
 			localStorage.log += "stop |" + new Date().toISOString() + "\n\n";
 			document.getElementById("log").value = localStorage.log;
-			document.getElementById("startbutton").disabled = false;
-			document.getElementById("stopbutton").disabled = true;
 			break;
 		default:
 			console.log("something went wrong");
 	}
 	push();
+}
+
+function reset(){
+	localStorage.removeItem("log");
+	document.getElementById("log").value = "";
+	document.getElementById("hours").innerHTML = "00";
+	document.getElementById("minutes").innerHTML = "00";
+	document.getElementById("seconds").innerHTML = "00";
+	document.getElementById("fracs").innerHTML = "0";
+	document.getElementById("stopbutton").disabled = true;
+	document.getElementById("startbutton").disabled = false;
+	if (!document.getElementById("log").disabled){
+		document.getElementById("editButton").innerHTML = "Edit";
+		document.getElementById("log").disabled = true;
+	}
 }
 
 function edit(){
