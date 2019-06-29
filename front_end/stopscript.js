@@ -22,11 +22,62 @@ function run(){
 		document.getElementById("stopbutton").disabled = true;
 	}
 
-	var hostname = (window.location.protocol == "https:") ? "wss://" : "ws://" + window.location.hostname + "/ws/";
-	var wSocket = new WebSocket(hostname);
-	wSocket.onopen = function(event){
-		wSocket.send(new Date().toISOString());
-		console.log("sent date")
+	hostname = (window.location.protocol == "https:") ? "wss://" : "ws://" + window.location.hostname + "/ws/";
+	wSocket = new WebSocket(hostname);
+	wSocket.onmessage = update;
+
+	get();
+}
+
+function get(){
+	var job = function(){
+		payload = {
+			id:btoa(localStorage.id)
+		};
+		payload = JSON.stringify(payload);
+		wSocket.send(payload);
+	}
+
+	checkSocket();
+	if (wSocket.readyState == WebSocket.CONNECTING){
+		wSocket.onopen = job;
+	} else{
+		job();
+	}
+}
+
+function push(){
+	var job = function(){
+		payload = {
+			id:btoa(localStorage.id),
+			log:(localStorage.log != undefined) ? localStorage.log:""
+		};
+		payload = JSON.stringify(payload);
+		wSocket.send(payload);
+	}
+
+	checkSocket();
+	if (wSocket.readyState == WebSocket.CONNECTING){
+		wSocket.onopen = job;
+	} else{
+		job();
+	}
+}
+
+function update(msg){
+	var newLog = JSON.parse(msg.data).log;
+	if (newLog == ""){
+		controlHandler("reset");
+	} else{
+		localStorage.log = JSON.parse(msg.data).log;
+	}
+}
+
+function checkSocket(){
+	if (wSocket.readyState == WebSocket.CLOSED || wSocket.readyState == WebSocket.CLOSING){
+		wSocket = new WebSocket(hostname);
+		wSocket.onmessage = update;
+		get();
 	}
 }
 
@@ -37,6 +88,8 @@ function changeID(){
 		document.getElementById("title").innerHTML = localStorage.id;
 		document.getElementById("idSelector").value = "";
 	}
+	wSocket.close();
+	get();
 }
 
 function updateTime(){
@@ -110,10 +163,8 @@ function controlHandler(type){
 	}
 	switch(type){
 		case "reset":
-			if (confirm("Are you sure you want to reset?")){
-				localStorage.removeItem("log");
-				document.getElementById("log").value = "";
-			}
+			localStorage.removeItem("log");
+			document.getElementById("log").value = "";
 			document.getElementById("hours").innerHTML = "00";
 			document.getElementById("minutes").innerHTML = "00";
 			document.getElementById("seconds").innerHTML = "00";
@@ -140,6 +191,7 @@ function controlHandler(type){
 		default:
 			console.log("something went wrong");
 	}
+	push();
 }
 
 function edit(){
@@ -150,8 +202,10 @@ function edit(){
 	} else{
 		document.getElementById("editButton").innerHTML = "Edit";
 		localStorage.log = document.getElementById("log").value;
+		push();
 	}
 }
 
 run();
 var iv = setInterval(updateTime, 100);
+var iv2 = setInterval(checkSocket, 1000);

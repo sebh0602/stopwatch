@@ -1,8 +1,68 @@
 const WebSocket = require("ws");
 const wss = new WebSocket.Server({ port:8080, maxPayload:5000000}); //mayPayload in bytes
+var idIndex = {};
+var data = {};
 
-wss.on("connection", function connection(ws){
-	ws.on("message", function incoming(message) {
-    	console.log(message);
+//PERIODICALLY CLEANSE ALL CONNECTIONS OF DEAD ONES
+//save
+//	broadcast
+//read
+
+function run(){
+	wss.on("connection", function connection(ws){
+		ws.on("message", function incoming(message) {
+			try{
+				var msg = JSON.parse(message);
+			} catch(err) {
+				console.log(err);
+				return;
+			}
+			var id = Buffer.from(msg.id).toString('base64');
+			if (!idIndex.hasOwnProperty(id)){
+				idIndex[id] = [ws];
+			} else{
+				var workingConnections = [];
+				for (var i=0; i<idIndex[id].length;i++){
+					if (idIndex[id][i].readyState == WebSocket.OPEN){
+						workingConnections.push(idIndex[id][i]);
+					}
+				}
+				if (!workingConnections.includes(ws)){
+					workingConnections.push(ws);
+				}
+				idIndex[id] = workingConnections;
+			}
+
+			if (msg.log != undefined){
+				data[id] = msg.log;
+				var payload = {
+					log:msg.log
+				};
+				payload = JSON.stringify(payload);
+				for (var i=0; i < idIndex[id].length; i++){
+					var client = idIndex[id][i];
+					if (client != ws){
+						client.send(payload);
+					}
+				}
+				if (data[id] == ""){
+					delete data[id];
+				}
+			} else{
+				var payload = {
+					log:(data[id] != undefined) ? data[id]:""
+				};
+				payload = JSON.stringify(payload);
+				ws.send(payload);
+			}
+
+	    	//ws.send(message);
+			console.log("_")
+			for (key in idIndex){
+				console.log(Buffer.from(Buffer.from(key, 'base64').toString('ascii'),"base64").toString("ascii"),idIndex[key].length);
+			}
+		});
 	});
-});
+}
+
+run();
