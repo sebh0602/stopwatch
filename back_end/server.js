@@ -4,10 +4,6 @@ const wss = new WebSocket.Server({ port:8080, maxPayload:5000000}); //mayPayload
 var idIndex = {};
 var data = {};
 
-//PERIODICALLY CLEANSE ALL CONNECTIONS OF DEAD ONES
-//save
-//read
-
 function run(){
 	if (fs.existsSync("data.json")){
 		data = JSON.parse(fs.readFileSync("data.json").toString());
@@ -70,4 +66,21 @@ function run(){
 	});
 }
 
+function cleanse(){
+	for (id in idIndex){
+		var workingConnections = [];
+		for (var i=0; i<idIndex[id].length;i++){
+			if (idIndex[id][i].readyState == WebSocket.OPEN){
+				workingConnections.push(idIndex[id][i]);
+			}
+		}
+		idIndex[id] = workingConnections;
+
+		if (idIndex[id].length == 0){
+			delete idIndex[id];
+		}
+	}
+}
+
+var iv = setInterval(cleanse,30000);
 run();
