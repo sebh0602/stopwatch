@@ -21,6 +21,13 @@ function run(){
 	} else{
 		document.getElementById("stopbutton").disabled = true;
 	}
+
+	var hostname = (window.location.protocol == "https:") ? "wss://" : "ws://" + window.location.hostname + "/ws/";
+	var wSocket = new WebSocket(hostname);
+	wSocket.onopen = function(event){
+		wSocket.send(new Date().toISOString());
+		console.log("sent date")
+	}
 }
 
 function changeID(){
@@ -113,6 +120,10 @@ function controlHandler(type){
 			document.getElementById("fracs").innerHTML = "0";
 			document.getElementById("stopbutton").disabled = true;
 			document.getElementById("startbutton").disabled = false;
+			if (!document.getElementById("log").disabled){
+				document.getElementById("editButton").innerHTML = "Edit";
+				document.getElementById("log").disabled = true;
+			}
 			break;
 		case "start":
 			localStorage.log += "start|" + new Date().toISOString() + "\n";

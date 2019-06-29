@@ -1,0 +1,22 @@
+{
+  "name": "stopwatch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sebh0602/stopwatch.git"
+  },
+  "author": "Sebastian Hietsch",
+  "dependencies": {
+    "ws": "7.0.1"
+  },
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/sebh0602/stopwatch/issues"
+  },
+  "homepage": "https://github.com/sebh0602/stopwatch#readme"
+}
