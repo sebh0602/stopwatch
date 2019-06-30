@@ -7,15 +7,25 @@ function run(){
 			randomID += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
 		}
 		localStorage.id = randomID;
+		sessionStorage.id = randomID;
 		updateURL();
 	} else{
+		sessionStorage.id = localStorage.id;
 		updateURL();
 	}
-	document.getElementById("title").innerHTML = localStorage.id;
-	document.title = "Stopwatch - " + localStorage.id;
+	document.getElementById("title").innerHTML = sessionStorage.id;
+	document.title = "Stopwatch - " + sessionStorage.id;
 
-	var log = localStorage.log
-	if (log != undefined){
+	if (localStorage.log != undefined){
+		var log = localStorage.log;
+	} else if (sessionStorage.log != undefined){
+		var log = sessionStorage.log;
+	} else{
+		var log;
+	}
+
+	if (log != undefined && log != ""){
+		sessionStorage.log = log;
 		document.getElementById("log").value = log;
 		var splitLog = log.split("\n");
 		splitLog = splitLog.slice(0,splitLog.length - 1);
@@ -38,7 +48,7 @@ function run(){
 function get(){
 	var job = function(){
 		payload = {
-			id:btoa(localStorage.id)
+			id:btoa(sessionStorage.id)
 		};
 		payload = JSON.stringify(payload);
 		wSocket.send(payload);
@@ -55,8 +65,8 @@ function get(){
 function push(){
 	var job = function(){
 		payload = {
-			id:btoa(localStorage.id),
-			log:(localStorage.log != undefined) ? localStorage.log:""
+			id:btoa(sessionStorage.id),
+			log:(sessionStorage.log != undefined) ? sessionStorage.log:""
 		};
 		payload = JSON.stringify(payload);
 		wSocket.send(payload);
@@ -75,8 +85,10 @@ function update(msg){
 	if (newLog == ""){
 		reset();
 	} else{
-		localStorage.log = JSON.parse(msg.data).log;
-		document.getElementById("log").value = localStorage.log;
+		sessionStorage.log = JSON.parse(msg.data).log;
+		localStorage.log = sessionStorage.log;
+		localStorage.id = sessionStorage.id;
+		document.getElementById("log").value = sessionStorage.log;
 	}
 }
 
@@ -91,9 +103,11 @@ function checkSocket(){
 function changeID(){
 	var newID = document.getElementById("idSelector").value;
 	if (newID != ""){
-		localStorage.id = document.getElementById("idSelector").value;
-		document.getElementById("title").innerHTML = localStorage.id;
-		document.title = "Stopwatch - " + localStorage.id;
+		sessionStorage.id = document.getElementById("idSelector").value;
+		localStorage.id = sessionStorage.id;
+		reset();
+		document.getElementById("title").innerHTML = sessionStorage.id;
+		document.title = "Stopwatch - " + sessionStorage.id;
 		document.getElementById("idSelector").value = "";
 		updateURL();
 		wSocket.close();
@@ -102,12 +116,22 @@ function changeID(){
 }
 
 function updateURL(){
-	window.history.pushState(null,"",window.location.href.split("?id=")[0] + "?id=" + encodeURI(localStorage.id));
+	window.history.pushState(null,"",window.location.href.split("?id=")[0] + "?id=" + encodeURI(sessionStorage.id));
 }
 
 function idFromUrl(){
 	var id = decodeURI(window.location.search.split("?id=")[1]);
+
+	if (id != localStorage.id){
+		localStorage.removeItem("log");
+	}
+	if (id != sessionStorage.id){ //a change in id has taken place (not reload)
+		localStorage.removeItem("log");
+		sessionStorage.removeItem("log");
+	}
+	sessionStorage.id = id;
 	localStorage.id = id;
+
 	document.getElementById("title").innerHTML = id;
 	document.title = "Stopwatch - " + id;
 	if (typeof wSocket !== "undefined"){
@@ -117,7 +141,7 @@ function idFromUrl(){
 }
 
 function updateTime(){
-	var log = localStorage.log;
+	var log = sessionStorage.log;
 	if (log == undefined){
 		return;
 	}
@@ -187,20 +211,24 @@ function updateTime(){
 }
 
 function controlHandler(type){
-	if (localStorage.log == undefined){
-		localStorage.log = "";
+	if (sessionStorage.log == undefined){
+		sessionStorage.log = "";
 	}
 	switch(type){
 		case "reset":
 			reset();
 			break;
 		case "start":
-			localStorage.log += "start|" + new Date().toISOString() + "\n";
-			document.getElementById("log").value = localStorage.log;
+			sessionStorage.log += "start|" + new Date().toISOString() + "\n";
+			localStorage.log = sessionStorage.log;
+			localStorage.id = sessionStorage.id;
+			document.getElementById("log").value = sessionStorage.log;
 			break;
 		case "stop":
-			localStorage.log += "stop |" + new Date().toISOString() + "\n\n";
-			document.getElementById("log").value = localStorage.log;
+			sessionStorage.log += "stop |" + new Date().toISOString() + "\n\n";
+			localStorage.log = sessionStorage.log;
+			localStorage.id = sessionStorage.id;
+			document.getElementById("log").value = sessionStorage.log;
 			break;
 		default:
 			console.log("something went wrong");
@@ -210,6 +238,7 @@ function controlHandler(type){
 
 function reset(){
 	localStorage.removeItem("log");
+	sessionStorage.removeItem("log");
 	document.getElementById("log").value = "";
 	document.getElementById("hours").innerHTML = "00";
 	document.getElementById("minutes").innerHTML = "00";
@@ -230,7 +259,9 @@ function edit(){
 		document.getElementById("editButton").innerHTML = "Submit";
 	} else{
 		document.getElementById("editButton").innerHTML = "Edit";
-		localStorage.log = document.getElementById("log").value;
+		sessionStorage.log = document.getElementById("log").value;
+		localStorage.log = sessionStorage.log;
+		localStorage.id = sessionStorage.id;
 		push();
 	}
 }
