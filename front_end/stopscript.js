@@ -13,7 +13,7 @@ function run(){
 		document.getElementById("log").value = log;
 		var splitLog = log.split("\n");
 		splitLog = splitLog.slice(0,splitLog.length - 1);
-		if (splitLog[splitLog.length - 1].includes("start")){
+		if (splitLog[splitLog.length - 1].indexOf("start") != -1){
 			document.getElementById("startbutton").disabled = true;
 		} else{
 			document.getElementById("stopbutton").disabled = true;
@@ -105,7 +105,7 @@ function updateTime(){
 	var stop;
 	var totalDelta = 0;
 	for (var i = 0; i < splitLog.length; i++){
-		if (splitLog[i].includes(nextCommand)){
+		if (splitLog[i].indexOf(nextCommand) != -1){
 			if (nextCommand == "start"){
 				start = new Date(splitLog[i].split("|")[1]);
 				nextCommand = "stop";
