@@ -14,7 +14,7 @@ function run(){
 		updateURL();
 	}
 	document.getElementById("title").innerHTML = sessionStorage.id;
-	document.title = "Stopwatch - " + sessionStorage.id;
+	document.title = "Stopwatch | " + sessionStorage.id;
 
 	if (localStorage.log != undefined){
 		var log = localStorage.log;
@@ -106,21 +106,29 @@ function changeID(){
 		sessionStorage.id = document.getElementById("idSelector").value;
 		localStorage.id = sessionStorage.id;
 		reset();
-		document.getElementById("title").innerHTML = sessionStorage.id;
-		document.title = "Stopwatch - " + sessionStorage.id;
-		document.getElementById("idSelector").value = "";
 		updateURL();
+		document.getElementById("title").innerHTML = sessionStorage.id;
+		document.title = "Stopwatch | " + sessionStorage.id;
+		document.getElementById("idSelector").value = "";
 		wSocket.close();
 		get();
 	}
 }
 
 function updateURL(){
-	window.history.pushState(null,"",window.location.href.split("?id=")[0] + "?id=" + encodeURI(sessionStorage.id));
+	var newURL = window.location.href.split("?id=")[0] + "?id=" + encodeURI(sessionStorage.id);
+	if (window.location.href.indexOf("?id=") == -1){
+		window.history.replaceState(null,"",newURL);
+	} else{
+		window.history.pushState(null,"",newURL);
+	}
 }
 
 function idFromUrl(){
 	var id = decodeURI(window.location.search.split("?id=")[1]);
+	if (id == "undefined"){
+		return;
+	}
 
 	if (id != localStorage.id){
 		localStorage.removeItem("log");
@@ -133,7 +141,7 @@ function idFromUrl(){
 	localStorage.id = id;
 
 	document.getElementById("title").innerHTML = id;
-	document.title = "Stopwatch - " + id;
+	document.title = "Stopwatch | " + id;
 	if (typeof wSocket !== "undefined"){
 		wSocket.close();
 		get();
