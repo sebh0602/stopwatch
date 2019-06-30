@@ -1,12 +1,18 @@
 function run(){
-	if (localStorage.id == undefined){
+	if (window.location.search.indexOf("?id=") != -1){
+		idFromUrl();
+	}else if (localStorage.id == undefined){
 		var randomID = "";
 		for (var i=0; i<8; i++){
 			randomID += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
 		}
 		localStorage.id = randomID;
+		updateURL();
+	} else{
+		updateURL();
 	}
 	document.getElementById("title").innerHTML = localStorage.id;
+	document.title = "Stopwatch - " + localStorage.id;
 
 	var log = localStorage.log
 	if (log != undefined){
@@ -87,10 +93,27 @@ function changeID(){
 	if (newID != ""){
 		localStorage.id = document.getElementById("idSelector").value;
 		document.getElementById("title").innerHTML = localStorage.id;
+		document.title = "Stopwatch - " + localStorage.id;
 		document.getElementById("idSelector").value = "";
+		updateURL();
+		wSocket.close();
+		get();
 	}
-	wSocket.close();
-	get();
+}
+
+function updateURL(){
+	window.history.pushState(null,"",window.location.href.split("?id=")[0] + "?id=" + encodeURI(localStorage.id));
+}
+
+function idFromUrl(){
+	var id = decodeURI(window.location.search.split("?id=")[1]);
+	localStorage.id = id;
+	document.getElementById("title").innerHTML = id;
+	document.title = "Stopwatch - " + id;
+	if (typeof wSocket !== "undefined"){
+		wSocket.close();
+		get();
+	}
 }
 
 function updateTime(){
@@ -215,3 +238,4 @@ function edit(){
 run();
 var iv = setInterval(updateTime, 100);
 var iv2 = setInterval(checkSocket, 1000);
+window.onpopstate = idFromUrl;
