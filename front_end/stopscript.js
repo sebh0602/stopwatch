@@ -48,7 +48,7 @@ function run(){
 function get(){
 	var job = function(){
 		payload = {
-			id:btoa(sessionStorage.id)
+			id:btoa(encodeURI(sessionStorage.id))
 		};
 		payload = JSON.stringify(payload);
 		wSocket.send(payload);
@@ -65,7 +65,7 @@ function get(){
 function push(){
 	var job = function(){
 		payload = {
-			id:btoa(sessionStorage.id),
+			id:btoa(encodeURI(sessionStorage.id)),
 			log:(sessionStorage.log != undefined) ? sessionStorage.log:""
 		};
 		payload = JSON.stringify(payload);
