@@ -5,8 +5,8 @@ var idIndex = {};
 var data = {};
 
 function run(){
-	if (fs.existsSync("data.json")){
-		data = JSON.parse(fs.readFileSync("data.json").toString());
+	if (fs.existsSync("data/data.json")){
+		data = JSON.parse(fs.readFileSync("data/data.json").toString());
 	}
 
 	wss.on("connection", function connection(ws){
@@ -48,7 +48,7 @@ function run(){
 				if (data[id] == ""){
 					delete data[id];
 				}
-				fs.writeFileSync("data.json", JSON.stringify(data));
+				fs.writeFileSync("data/data.json", JSON.stringify(data));
 			} else{
 				var payload = {
 					log:(data[id] != undefined) ? data[id]:""
@@ -64,6 +64,8 @@ function run(){
 			}
 		});
 	});
+
+	console.log("Ready to handle connections!");
 }
 
 function cleanse(){

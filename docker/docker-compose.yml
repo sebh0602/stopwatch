@@ -1,0 +1,19 @@
+services:
+  traffic_manager:
+    build:
+      context: traffic_manager/
+      dockerfile: Dockerfile
+    ports:
+     - 80:80
+  front_end:
+    build:
+      context: ../
+      dockerfile: docker/front_end/Dockerfile
+  back_end:
+    build:
+      context: ../
+      dockerfile: docker/back_end/Dockerfile
+    working_dir: /home/node/back_end
+    command: "npm start"
+    volumes:
+      - ./data:/home/node/back_end/data
