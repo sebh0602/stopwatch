@@ -1,21 +1,12 @@
 services:
   traffic_manager:
     image: stopwatch_traffic_manager
-    build:
-      context: traffic_manager/
-      dockerfile: Dockerfile
     ports:
      - 80:80
   front_end:
     image: stopwatch_front_end
-    build:
-      context: ../
-      dockerfile: docker/front_end/Dockerfile
   back_end:
     image: stopwatch_back_end
-    build:
-      context: ../
-      dockerfile: docker/back_end/Dockerfile
     working_dir: /home/node/back_end
     command: "npm start"
     volumes:
